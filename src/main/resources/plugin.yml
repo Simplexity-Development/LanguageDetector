@@ -1,0 +1,6 @@
+name: LanguageDetector
+version: '${project.version}'
+main: adhdmc.languagedetector.LanguageDetector
+api-version: 1.19
+authors: [ Peashooter101 ]
+description: A small plugin to detect the client's locale.
