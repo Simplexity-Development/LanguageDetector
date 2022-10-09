@@ -10,19 +10,34 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLocaleChangeEvent;
 import org.bukkit.plugin.Plugin;
 
+import java.util.List;
 import java.util.Locale;
+import java.util.logging.Logger;
 
 public class PlayerLocaleChange implements Listener {
 
     Plugin plugin = LanguageDetector.getPlugin();
+    Logger logger = LanguageDetector.getPlugin().getLogger();
+
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerLocaleChange(PlayerLocaleChangeEvent event) {
-        Locale locale = event.locale();
         Player player = event.getPlayer();
         if (player.hasPermission(LanguageDetector.getBypassPerm())) return;
-        if (!plugin.getConfig().getStringList("supported-languages").contains(locale.toLanguageTag().toLowerCase())) {
-            String message = plugin.getConfig().getString("kick-message", "<red>You have been kicked from the server.\n<yellow>Your language is not set to a supported language.\n<gray>Your language is: <playerlocale>");
-            player.kick(MiniMessage.miniMessage().deserialize(message, Placeholder.unparsed("playerlocale", locale.getDisplayLanguage())));
+
+        Locale locale = event.locale();
+        List<String> supportedLanguages = plugin.getConfig().getStringList("supported-languages");
+        String langCode = locale.getLanguage().toLowerCase();
+        String localeCode = locale.toLanguageTag();
+
+        if (!supportedLanguages.contains(langCode) && !supportedLanguages.contains(localeCode.toLowerCase())) {
+            String message = plugin.getConfig().getString("kick-message",
+                """
+                <red>You have been kicked from the server.
+                <yellow>Your language is not set to a supported language.
+                <gray>Your language is: <playerlang> (<playerlocale>)
+                """);
+            player.kick(MiniMessage.miniMessage().deserialize(message, Placeholder.unparsed("playerlang", locale.getDisplayLanguage()), Placeholder.unparsed("playerlocale", locale.toLanguageTag())));
+            logger.info("Kicked player " + player.getName() + " for an invalid locale (" + localeCode + ").");
         }
     }
 }
