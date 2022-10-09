@@ -1,0 +1,7 @@
+# Language Detector
+# https://minecraft.fandom.com/wiki/Language#Languages
+supported-languages:
+  - en_us
+# https://webui.adventure.kyori.net/ Use minimessage formatting
+# Supported placeholders are <playerlocale>
+kick-message: "<red>You have been kicked from the server.\n<yellow>Your language is not set to a supported language.\n<gray>Your language is: <playerlocale>"
